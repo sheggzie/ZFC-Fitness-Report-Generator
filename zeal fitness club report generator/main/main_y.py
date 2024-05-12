@@ -1,9 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import pandas as pd
 
-link = r'https://docs.google.com/spreadsheets/d/1NabvXF-XFLJzfNVQgEmE7bQA3332yXz4G2dgchFyvEE/edit?usp=drive_link'
-
-sheet = pd.read_excel(link, sheet_name='quadri')
+sheet = pd.read_excel('april.xlsx', sheet_name='Actually')
 
 text = sheet.iloc[31, [4, 5, 6]]
 
