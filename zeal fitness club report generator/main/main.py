@@ -1,39 +1,43 @@
 from PIL import Image, ImageDraw, ImageFont
 import pandas as pd
 
-sheet = pd.read_excel('april.xlsx', sheet_name='Actually')
+xls = pd.ExcelFile('specimen.xlsx')
 
-text = sheet.iloc[31, [4, 5, 6]]
+df = xls.sheet_names
 
-# Load the font you want to use
-font = ImageFont.load_default()
+for i in range(len(df)):     
+    sheet = pd.read_excel(xls, sheet_name=df[i])  
+    head_rows = sheet.columns
 
-# Create an empty image
-img = Image.new('RGB', (600, 500), color = (255, 255, 255))
+    row = sheet.iloc[31, 4:].to_string(index=False)
+    col = head_rows[4:]
 
-# Initialize ImageDraw object
-draw = ImageDraw.Draw(img)
+    a = col
+    b = row       
+    c = zip(a, b)
+    
+    # Load the font you want to use
+    font = ImageFont.truetype('arial.ttf', 25)
 
-# Set initial position for text drawing
-x = 10
-y = 10
+    # Create an empty image
+    img = Image.new('RGB', (600, 500), color = (255, 255, 255))
 
-draw.text((x, y), text.to_string(), fill=(0, 0, 0), font=font)
+    # Initialize ImageDraw object
+    draw = ImageDraw.Draw(img)
+    
+    # Set initial position for text drawing
+    x = 10
+    y = 10
 
-# Save the image
-img.save('output_image_new.png')
+    for s, t in c:
+        text = (f"{s:<25}{t:>25}")
+        print(text)
+    
+    
+    draw.text((x, y), text, fill=(0, 0, 0), font=font)
 
-print("Image created successfully!")
+    # Save the image
+    img.save(df[i]+'.png')
 
-
-
-
-
-
-
-
-
-
-# text = sheet.iloc[31, [4, 5, 6]]
-
-# print(text.to_string())
+    print("Image created successfully!")
+    print(" ")  

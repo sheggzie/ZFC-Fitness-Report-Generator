@@ -1,41 +1,42 @@
-from openpyxl import load_workbook
 from PIL import Image, ImageDraw, ImageFont
+import pandas as pd
 
-# Load the Excel workbook
-workbook = load_workbook('april.xlsx')
+xls = pd.ExcelFile('specimen.xlsx')
 
-# Select the active worksheet
-worksheet = workbook['Actually']
+df = xls.sheet_names
 
-# Load the font you want to use
-font = ImageFont.load_default()
+for i in range(len(df)):     
+    sheet = pd.read_excel(xls, sheet_name=df[i])  
+    
+    row = sheet.iloc[31, 4:].to_string(index=False)
+    col = sheet.columns
+    
+    # a = col[4:]
+    a = []
 
-# Create an empty image
-img = Image.new('RGB', (600, 500), color = (255, 255, 255))
+    c = zip(a.append(col[4:]), row)   
+    
+    # Load the font you want to use
+    font = ImageFont.truetype('arial.ttf', 25)
 
-# Initialize ImageDraw object
-draw = ImageDraw.Draw(img)
+    # Create an empty image
+    img = Image.new('RGB', (600, 500), color = (255, 255, 255))
 
-# Set initial position for text drawing
-x = 10
-y = 10
+    # Initialize ImageDraw object
+    # draw = ImageDraw.Draw(img)
+    
+    # Set initial position for text drawing
+    x = 10
+    y = 10
 
-text = workbook.active
+    for s, t in c:
+        text = (f"{s:<20}{t:>20}")
+        print(len(s), len(t))
 
-# draw.text((x, y), text, fill=(0, 0, 0), font=font)
+    
+    # draw.text((x, y), text, fill=(0, 0, 0), font=font)
 
-# # Loop through rows and columns to extract text and draw onto image
-# for row in worksheet.iter_rows():  
-#     for cell in row:
-#         # Extract text from cell
-#         text = str(cell.value)
-#         # Draw text onto image
-#         draw.text((x, y), text, fill=(0, 0, 0), font=font)
-#         # Move to the next position
-#         y += 20  # Adjust this value based on your font size or layout
-#     y += 10  # Add some space between rows
+    # Save the image
+    # img.save(df[i]+'.png')
 
-# Save the image
-img.save('output_image_new.png')
-
-print("Image created successfully!")
+    # print("Image created successfully!")  
