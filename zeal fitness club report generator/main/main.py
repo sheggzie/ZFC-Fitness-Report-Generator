@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 import pandas as pd
 
 # Load the Excel file
-xls = pd.ExcelFile('specimen.xlsx')
+xls = pd.ExcelFile('may report.xlsx')
 
 # Get sheet names
 df = xls.sheet_names
