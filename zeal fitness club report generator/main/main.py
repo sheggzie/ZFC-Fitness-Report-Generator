@@ -24,7 +24,7 @@ for i in range(len(df)):
     font = ImageFont.truetype('arial.ttf', 25)
 
     # Create an empty image
-    img = Image.new('RGB', (800, 600), color=(255, 255, 255))
+    img = Image.new('RGB', (600, 700), color=(255, 255, 255))
 
     # Initialize ImageDraw object
     draw = ImageDraw.Draw(img)
@@ -33,8 +33,8 @@ for i in range(len(df)):
     max_col_width = max(draw.textbbox((0, 0), s, font=font)[2] for s, _ in c)
 
     # Set initial position for text drawing
-    x = 10
-    y = 10
+    x = 30
+    y = 20
     padding = 80  # Padding between column header and row value
     row_spacing = 20  # Spacing between rows
 
