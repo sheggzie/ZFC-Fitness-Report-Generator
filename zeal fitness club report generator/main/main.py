@@ -55,7 +55,7 @@ for i in range(len(df)):
     font_regular = ImageFont.truetype('Inter-ExtraBold.ttf', font_size)
     
     # Load the bold font for the content
-    font_bold = ImageFont.truetype('Inter-Bold.ttf', font_size)
+    font_bold = ImageFont.truetype('Inter-SemiBold.ttf', font_size)
 
     # Initialize a dummy ImageDraw object to calculate text size
     dummy_img = Image.new('RGB', (1, 1), color=(255, 255, 255))
