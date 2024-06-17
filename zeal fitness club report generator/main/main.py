@@ -13,10 +13,16 @@ df = xls.sheet_names
 
 # Define font sizes and padding
 font_size_normal = 25
-font_size_small = 15
-padding = 30
+font_size_small = 20
+top_padding = 30
+side_padding = 30
+additional_left_padding = 50
 row_spacing = 30
-min_image_height = 200  # Minimum height to ensure space for very few rows
+
+# Define the base image paths
+base_image_small_path = 'base image.png'
+base_image_medium_path = 'base image medium.png'
+base_image_large_path = 'base image large.png'
 
 for i in range(len(df)):     
     # Read each sheet into a dataframe
@@ -34,62 +40,74 @@ for i in range(len(df)):
     # Zip the column headers and row data together
     c = list(zip(col, row))
 
-    # Determine the font size based on the number of rows
-    font_size = font_size_small if len(c) < 3 else font_size_normal
+    # Determine the font size and the base image path based on the number of rows
+    if len(c) == 3:
+        font_size = font_size_normal
+        base_image_path = base_image_medium_path
+    elif len(c) > 4:
+        font_size = font_size_normal
+        base_image_path = base_image_large_path
+    else:
+        font_size = font_size_small
+        base_image_path = base_image_small_path
 
-    # Load the appropriate font
-    font = ImageFont.truetype('arial.ttf', font_size)
+    # Load the appropriate font for the header and title
+    font_regular = ImageFont.truetype('Inter-ExtraBold.ttf', font_size)
+    
+    # Load the bold font for the content
+    font_bold = ImageFont.truetype('Inter-Bold.ttf', font_size)
 
     # Initialize a dummy ImageDraw object to calculate text size
     dummy_img = Image.new('RGB', (1, 1), color=(255, 255, 255))
     dummy_draw = ImageDraw.Draw(dummy_img)
     
     # Calculate maximum width and total height needed for the text
-    max_col_width = max(dummy_draw.textbbox((0, 0), s, font=font)[2] for s, _ in c)
-    total_height = sum(dummy_draw.textbbox((0, 0), s, font=font)[3] - dummy_draw.textbbox((0, 0), s, font=font)[1] + row_spacing for s, _ in c)
-    total_height += dummy_draw.textbbox((0, 0), f"Name: {df[i]}", font=font)[3] - dummy_draw.textbbox((0, 0), f"Sheet: {df[i]}", font=font)[1] + row_spacing
-    total_height += dummy_draw.textbbox((0, 0), f"{current_month} workout stats.", font=font)[3] - dummy_draw.textbbox((0, 0), f"Workout stats for the month of {current_month}", font=font)[1] + row_spacing
+    max_col_width = max(dummy_draw.textbbox((0, 0), s, font=font_bold)[2] for s, _ in c)
+    total_height = sum(dummy_draw.textbbox((0, 0), s, font=font_bold)[3] - dummy_draw.textbbox((0, 0), s, font=font_bold)[1] + row_spacing for s, _ in c)
 
-    # Ensure minimum image height
-    img_height = max(total_height + padding * 2, min_image_height)
-    img_width = max_col_width * 2 + padding * 3
+    # Load the selected base image
+    base_img = Image.open(base_image_path)
+    base_width, base_height = base_img.size
 
-    # Create an empty image with calculated dimensions
-    img = Image.new('RGB', (img_width, img_height), color=(255, 255, 255))
+    # Create a copy of the base image to draw on
+    img = base_img.copy()
 
     # Initialize ImageDraw object
     draw = ImageDraw.Draw(img)
-    
-    # Set initial position for text drawing, centered vertically
-    y = (img_height - total_height) // 2 if img_height > total_height else padding
-    x = padding
 
-    # Draw the sheet name at the top
-    sheet_name_text = f"Name: {df[i]}"
-    draw.text((x, y), sheet_name_text, fill=(0, 0, 0), font=font)
-    
-    # Move to the next line
-    y += draw.textbbox((x, y), sheet_name_text, font=font)[3] - draw.textbbox((x, y), sheet_name_text, font=font)[1] + row_spacing
+    # Set initial position for text drawing
+    x = side_padding
+    y = top_padding
 
-    # Draw the title text with the current month
-    title_text = f"{current_month} workout stats."
-    draw.text((x, y), title_text, fill=(0, 0, 0), font=font)
+    # Draw the sheet name at the top left
+    sheet_name_text = f"Hi {df[i]}"
+    draw.text((x, y), sheet_name_text, fill=(255, 255, 255), font=font_regular)
     
     # Move to the next line
-    y += draw.textbbox((x, y), title_text, font=font)[3] - draw.textbbox((x, y), title_text, font=font)[1] + row_spacing
+    y += draw.textbbox((x, y), sheet_name_text, font=font_regular)[3] - draw.textbbox((x, y), sheet_name_text, font=font_regular)[1] + row_spacing
 
-    # Draw each pair of column header and row value
+    # Draw the title text with the current month below the sheet name
+    title_text = f"{current_month} workout stats"
+    draw.text((x, y), title_text, fill=(255, 255, 255), font=font_regular)
+    
+    # Move to the next line and add additional spacing to separate from the rest of the content
+    y += draw.textbbox((x, y), title_text, font=font_regular)[3] - draw.textbbox((x, y), title_text, font=font_regular)[1] + row_spacing * 2
+
+    # Adjust x for additional left padding for the rest of the content
+    content_x = x + additional_left_padding
+
+    # Draw each pair of column header and row value, starting below the title text
     for s, t in c:
         # Calculate position for the row value to be right-aligned
         col_text = s
         row_text = str(t)
-        row_x = x + max_col_width + padding
+        row_x = content_x + max_col_width + side_padding
         
-        draw.text((x, y), col_text, fill=(0, 0, 0), font=font)
-        draw.text((row_x, y), row_text, fill=(0, 0, 0), font=font)
+        draw.text((content_x, y), col_text, fill=(255, 255, 255), font=font_bold)
+        draw.text((row_x, y), row_text, fill=(255, 255, 255), font=font_bold)
         
         # Move to the next line position using textbbox to get the height
-        bbox = draw.textbbox((x, y), col_text, font=font)
+        bbox = draw.textbbox((content_x, y), col_text, font=font_bold)
         y += bbox[3] - bbox[1] + row_spacing
 
     # Save the image
