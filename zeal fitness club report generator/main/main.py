@@ -3,11 +3,11 @@ import pandas as pd
 import os
 
 # Get the current month name
-current_month = "July"
+current_month = "August"
 # current_month = datetime.now().strftime('%B')
 
 # Load the Excel file
-xls = pd.ExcelFile(os.path.join('resources', 'july report.xlsx'))
+xls = pd.ExcelFile(os.path.join('resources', 'august report.xlsx'))
 
 # Get sheet names
 df = xls.sheet_names
@@ -17,6 +17,7 @@ font_size_xl = 400
 font_size_large = 90
 font_size_normal = 80
 font_size_small = 70
+font_size_mini = 30
 top_padding = 160
 side_padding = 200
 additional_left_padding = 120
@@ -24,9 +25,10 @@ row_spacing = 90
 
 # Define the base image paths
 base_image_small_path = os.path.join('resources', 'base image.png')
+base_image_pro_path = os.path.join('resources', 'base image pro.png')
 base_image_medium_path = os.path.join('resources', 'base image medium.png')
 base_image_large_path = os.path.join('resources', 'base image large.png')
-base_image_wide_path = os.path.join('resources', 'base image wide.png')
+base_image_medium_pro_path = os.path.join('resources', 'base image medium pro.png')
 base_image_extra_large_path = os.path.join('resources', 'base image extra large.png')
 
 
@@ -68,20 +70,22 @@ for i in range(len(df)):
     
     # Determine the font size and the base image path based on the number of rows and text width
     if max_col_width > width_threshold:
-        font_size = font_size_xl
         base_image_path = base_image_extra_large_path
-    elif len(c) == 3:
+    elif len(c) == 3 or len(c) <= 2:
         font_size = font_size_large
-        base_image_path = base_image_small_path
-    elif len(c) <= 2:
-        font_size = (font_size_large + 20)
         base_image_path = base_image_small_path
     elif len(c) == 4 or len(c) == 5:
         font_size = font_size_small
         base_image_path = base_image_small_path
-    elif len(c) == 13:
-        font_size = font_size_large
+    elif len(c) == 6:
+        font_size = font_size_xl
+        base_image_path = base_image_pro_path
+    elif len(c) == 8:
+        font_size = font_size_xl
         base_image_path = base_image_medium_path
+    elif len(c) == 24:
+        font_size = font_size_large
+        base_image_path = base_image_medium_pro_path
 
     # Load the selected base image
     base_img = Image.open(base_image_path)
